@@ -1,6 +1,7 @@
 # CMSSW set-up
 
 ```
+cmssw-el7
 cmsrel CMSSW_10_6_27
 cd CMSSW_10_6_27/src
 cmsenv
@@ -13,7 +14,7 @@ scram b -j 8
 # Get private code
 
 ```
-git clone https://github.com/cecilecaillol/NanoAODreprocessing.git
+git clone https://github.com/bbilin/NanoAODreprocessing.git
 cp NanoAODreprocessing/chargedPF_cff.py PhysicsTools/NanoAOD/python/.
 cp NanoAODreprocessing/losttracks_cff.py.py PhysicsTools/NanoAOD/python/.
 cp NanoAODreprocessing/vertices_cff.py.py PhysicsTools/NanoAOD/python/.
