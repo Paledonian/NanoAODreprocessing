@@ -25,7 +25,7 @@ CAMPAIGNS = {
     "RunIISummer20UL18MiniAODv2": ("2018", "18"),
 }
 
-TEMPLATE = """from CRABClient.UserUtilities import config, getUsernameFromCRIC
+TEMPLATE = """from CRABClient.UserUtilities import config
 
 config = config()
 
