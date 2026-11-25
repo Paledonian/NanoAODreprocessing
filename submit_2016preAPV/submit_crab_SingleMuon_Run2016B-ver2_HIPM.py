@@ -15,6 +15,7 @@ config.Data.inputDataset = "/SingleMuon/Run2016B-ver2_HIPM_UL2016_MiniAODv2-v2/M
 config.Data.outLFNDirBase = "/store/group/METUCMS/photonana/reNanoAOD/"
 config.Data.outputDatasetTag = "SingleMuon_Run2016B-ver2_HIPM-RunIISummer20UL16APV_NanoAODv9"
 config.Data.inputDBS = "global"
+config.Data.lumiMask = "https://cms-service-dqmdc.web.cern.ch/CAF/certification/Collisions16/13TeV/Legacy_2016/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt"
 config.Data.splitting = "FileBased"
 config.Data.unitsPerJob = 1
 config.Data.publication = False

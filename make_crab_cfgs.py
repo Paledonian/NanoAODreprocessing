@@ -5,7 +5,8 @@
 
 Each list holds full dataset names, one per line (# starts a comment): UL
 MiniAODv2 MC (MINIAODSIM, run with run_crab_mc.py) or UL MiniAODv2 data
-(MINIAOD, run with run_crab_data.py). The year folder comes from the campaign
+(MINIAOD, run with run_crab_data.py on the golden luminosity sections of
+its year). The year folder comes from the campaign
 or the run era (HIPM runs are 2016preAPV), the request name from the dataset name.
 Every dataset is checked in DBS first: it must be VALID, and its events per file
 set unitsPerJob so that a job reads about EVENTS_PER_JOB events. Needs a grid
@@ -25,6 +26,14 @@ CAMPAIGNS = {
     "RunIISummer20UL16MiniAODv2": ("2016postAPV", "16"),
     "RunIISummer20UL17MiniAODv2": ("2017", "17"),
     "RunIISummer20UL18MiniAODv2": ("2018", "18"),
+}
+
+# golden JSON of each year, which the data configs pass to CRAB as Data.lumiMask
+CERT = "https://cms-service-dqmdc.web.cern.ch/CAF/certification/"
+GOLDEN_JSON = {
+    "2016": CERT + "Collisions16/13TeV/Legacy_2016/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt",
+    "2017": CERT + "Collisions17/13TeV/Legacy_2017/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt",
+    "2018": CERT + "Collisions18/13TeV/Legacy_2018/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt",
 }
 
 # primary dataset prefix -> config name, the names the 2017 and 2018 configs use
@@ -56,7 +65,7 @@ config.Data.inputDataset = "{dataset}"
 config.Data.outLFNDirBase = "/store/group/METUCMS/photonana/reNanoAOD/"
 config.Data.outputDatasetTag = "{tag}"
 config.Data.inputDBS = "global"
-config.Data.splitting = "FileBased"
+{lumimask}config.Data.splitting = "FileBased"
 config.Data.unitsPerJob = {units}
 config.Data.publication = False
 config.Data.ignoreLocality = True
@@ -116,6 +125,7 @@ def main(lists):
             yy = {"2016preAPV": "16APV", "2016postAPV": "16", "2017": "17", "2018": "18"}[year]
             name, pset, suffix = "%s_%s" % (primary, era), "run_crab_data.py", ""
             request, tag = name, "%s-RunIISummer20UL%s_NanoAODv9" % (name, yy)
+            lumimask = 'config.Data.lumiMask = "%s"\n' % GOLDEN_JSON[run_year]
         else:
             campaign = processed.split("-")[0]
             if tier != "MINIAODSIM" or campaign not in CAMPAIGNS:
@@ -125,6 +135,7 @@ def main(lists):
             suffix = "_" + ext.group(1) if ext else ""
             name, pset = short_name(primary) + suffix, "run_crab_mc.py"
             request, tag = "%s_%s" % (name, year), "RunIISummer20UL%s_NanoAODv9%s" % (yy, suffix)
+            lumimask = ""
         cfg = "submit_%s/submit_crab_%s.py" % (year, name)
         if cfg in seen:
             sys.exit("%s and %s both map to %s" % (seen[cfg], dataset, cfg))
@@ -140,7 +151,8 @@ def main(lists):
 
         os.makedirs("submit_" + year, exist_ok=True)
         with open(cfg, "w") as f:
-            f.write(TEMPLATE.format(request=request, pset=pset, dataset=dataset, tag=tag, units=units))
+            f.write(TEMPLATE.format(request=request, pset=pset, dataset=dataset, tag=tag, units=units,
+                                    lumimask=lumimask))
         print("%-75s %4d files/job %5d jobs %11d events" % (cfg, units, njobs, nevents))
 
 
